@@ -1,0 +1,5 @@
+Flask
+numpy
+Pillow
+# Optional: TensorFlow (only required if you place a Keras model at models/model.h5)
+# tensorflow>=2.0

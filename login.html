@@ -1,0 +1,26 @@
+<!doctype html>
+<title>Glioma Detection using LSTM and BiLSTM - Login</title>
+<style>body {font-family:Arial; max-width:400px; margin:50px auto; padding:20px;}
+input, button {width:100%; padding:12px; margin:10px 0; box-sizing:border-box;}
+button {background:#007bff; color:white; border:none; cursor:pointer;}</style>
+</head>
+<body>
+<h1>Login to Glioma Detection using LSTM and BiLSTM</h1>
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    {% for message in messages %}
+      <p style="color:red;">{{ message }}</p>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+<form method="post">
+  <label>Username:</label>
+  <input type="text" name="username" required>
+  <label>Password:</label>
+  <input type="password" name="password" required>
+  <button type="submit">Login</button>
+</form>
+<p><small>Demo: username <strong>admin</strong> password <strong>123</strong></small></p>
+</body>
+</html>
+

@@ -1,0 +1,100 @@
+<!doctype html>
+<title>Glioma Detection using LSTM and BiLSTM - Result</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>body{font-family:Arial;margin:24px auto;max-width:900px;} h1,h3{color:#333;} canvas{width:100%!important;height:300px!important;} table{border-collapse:collapse;width:100%;} th,td{border:1px solid #ddd;padding:12px;text-align:center;font-weight:bold;} th{background:#4CAF50;color:white;} .tn{background:#4CAF50;color:white!important;}.fp,.fn{background:#f44336;color:white!important;}.tp{background:#28a745;color:white!important;}</style>
+</head>
+<body>
+  <h1>Prediction Result</h1>
+  <img src="/static/uploads/{{ image_filename }}" alt="Uploaded MRI" style="max-width:300px;max-height:300px;border:3px solid #007bff;border-radius:8px;margin:20px 0;">
+  <p><strong>Tumor: {{ 'Yes' if 'Tumor' in label else 'No' }}</strong><br>
+  Label: {{ label }} | Confidence: {{ score }} ({{ "%.1f"|format(float(score)*100) }}%)</p>
+  
+  <h3>Model Evolution Metrics (Interactive Graphs)</h3>
+  
+  <!-- CM Evolution Heatmap -->
+  <canvas id="cmChart"></canvas>
+  
+  <!-- Metrics Performance Radar -->
+  <canvas id="metricsChart"></canvas>
+  
+  <h3>Confusion Matrix Table</h3>
+  <table>
+    <tr><th colspan=2>True \ Predicted</th><th class="tn">No Tumor</th><th class="tp">Tumor</th></tr>
+    <tr><th class="tn">No Tumor</th><td class="tn">{{ "%.0f"|format(metrics.cm[0][0]) }}</td><td class="fp">{{ "%.0f"|format(metrics.cm[0][1]) }}</td></tr>
+    <tr><th class="tp">Tumor</th><td class="fn">{{ "%.0f"|format(metrics.cm[1][0]) }}</td><td class="tp">{{ "%.0f"|format(metrics.cm[1][1]) }}</td></tr>
+  </table>
+  
+  <h3>Performance Metrics</h3>
+  <ul style="font-size:1.2em;">
+    <li><strong>Accuracy:</strong> {{ "%.1f"|format(metrics.accuracy*100) }}%</li>
+    <li><strong>Precision:</strong> {{ "%.1f"|format(metrics.precision*100) }}%</li>
+    <li><strong>Recall:</strong> {{ "%.1f"|format(metrics.recall*100) }}%</li>
+    <li><strong>F1 Score:</strong> {{ "%.1f"|format(metrics.f1*100) }}%</li>
+  </ul>
+  
+  <p><a href="/" style="background:#007bff;color:white;padding:12px 24px;text-decoration:none;border-radius:6px;font-size:1.1em;">← New Prediction</a> 
+  <a href="/accuracy" style="background:#28a745;color:white;padding:12px 24px;text-decoration:none;border-radius:6px;font-size:1.1em;">📈 Full Dashboard</a> 
+  <a href="/logout" style="background:#6c757d;color:white;padding:12px 24px;text-decoration:none;border-radius:6px;font-size:1.1em;">Logout</a></p>
+
+  <script>
+    const metricsData = {{ metrics|tojson }};
+    const cmValues = [metricsData.cm[0][0], metricsData.cm[0][1], metricsData.cm[1][0], metricsData.cm[1][1]];
+    
+    // Confusion Matrix Doughnut Chart
+    new Chart(document.getElementById('cmChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['True Negative (' + Math.round(metricsData.cm[0][0]) + ')', 'False Positive (' + Math.round(metricsData.cm[0][1]) + ')', 'False Negative (' + Math.round(metricsData.cm[1][0]) + ')', 'True Positive (' + Math.round(metricsData.cm[1][1]) + ')'],
+        datasets: [{
+          data: cmValues,
+          backgroundColor: ['#4CAF50', '#f44336', '#f44336', '#28a745'],
+          borderColor: '#fff',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'bottom' },
+          title: { display: true, text: 'Model Evolution Matrix (Confusion)', font: { size: 16 } }
+        }
+      }
+    });
+    
+    // Performance Metrics Radar Chart
+    new Chart(document.getElementById('metricsChart'), {
+      type: 'radar',
+      data: {
+        labels: ['Accuracy (%)', 'Precision (%)', 'Recall (%)', 'F1 Score (%)'],
+        datasets: [{
+          label: 'Model Evolution',
+          data: [
+            metricsData.accuracy * 100,
+            metricsData.precision * 100, 
+            metricsData.recall * 100,
+            metricsData.f1 * 100
+          ],
+          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+          borderColor: 'rgba(54, 162, 235, 1)',
+          borderWidth: 3,
+          pointBackgroundColor: 'rgba(54, 162, 235, 1)'
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          r: {
+            beginAtZero: true,
+            max: 100,
+            ticks: { stepSize: 10 }
+          }
+        },
+        plugins: {
+          title: { display: true, text: 'Model Performance Evolution Radar', font: { size: 16 } }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
+

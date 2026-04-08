@@ -1,0 +1,26 @@
+<!doctype html>
+<title>Glioma Detection using LSTM and BiLSTM - Upload MRI Image</title>
+<style>body {font-family:Arial; max-width:600px; margin:50px auto; padding:20px;}
+input, button {width:100%; padding:12px; margin:10px 0;}
+button {background:#28a745; color:white; border:none; cursor:pointer;}
+a {color:#007bff;}</style>
+</head>
+<body>
+<h1>Upload MRI Image for Glioma Detection using LSTM and BiLSTM</h1>
+<p>Upload JPG, JPEG, PNG image for glioma tumor detection using LSTM and BiLSTM.</p>
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    {% for message in messages %}
+      <p style="color:red;">{{ message }}</p>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+<form action="/predict" method="post" enctype="multipart/form-data">
+  <label>Choose image:</label>
+  <input type="file" name="datafile" accept="image/*,.jpg,.jpeg,.png" required>
+  <button type="submit">Detect Tumor</button>
+</form>
+<p><a href="/logout">Logout</a></p>
+</body>
+</html>
+

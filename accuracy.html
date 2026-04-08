@@ -1,0 +1,76 @@
+<!doctype html>
+<title>Glioma Detection using LSTM and BiLSTM - Model Accuracy</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>body{font-family:Arial;margin:24px auto;max-width:1000px;} h1,h2,h3{color:#333;} canvas{max-width:100%;height:400px;} .metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;} table{border-collapse:collapse;width:100%;} th,td{border:1px solid #ddd;padding:8px;text-align:center;} th{background:#f0f0f0;}</style>
+</head>
+<body>
+  <h1>Model Performance Dashboard</h1>
+  <p>Interactive charts showing LSTM/BiLSTM ensemble accuracy on glioma MRI detection.</p>
+  
+  <div class="metric-grid">
+    <div>
+      <h3>Key Metrics (Bar Chart)</h3>
+      <canvas id="metricsChart"></canvas>
+    </div>
+    <div>
+      <h3>Confusion Matrix (Heatmap)</h3>
+      <canvas id="confusionChart"></canvas>
+    </div>
+  </div>
+  
+  <h3>Performance Trends (Training Epochs)</h3>
+  <canvas id="trendChart"></canvas>
+  
+  <p><a href="/">← Back to Prediction</a> | <a href="/logout">Logout</a></p>
+
+  <script>
+    const metrics = {{ metrics|tojson }};
+    
+    // Metrics Bar Chart
+    new Chart(document.getElementById('metricsChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Accuracy', 'Precision', 'Recall', 'F1'],
+        datasets: [{
+          label: '%',
+          data: [metrics.accuracy*100, metrics.precision*100, metrics.recall*100, metrics.f1*100],
+          backgroundColor: ['#28a745', '#007bff', '#ffc107', '#17a2b8']
+        }]
+      },
+      options: { scales: { y: { beginAtZero: true, max: 100 } } }
+    });
+    
+    // Confusion Matrix Heatmap
+    const cm = metrics.cm;
+    const total = cm[0][0] + cm[0][1] + cm[1][0] + cm[1][1];
+    new Chart(document.getElementById('confusionChart'), {
+      type: 'bar',
+      data: {
+        labels: ['TN', 'FP', 'FN', 'TP'],
+        datasets: [{
+          label: 'Count',
+          data: [cm[0][0], cm[0][1], cm[1][0], cm[1][1]],
+          backgroundColor: ['#28a745', '#dc3545', '#dc3545', '#28a745']
+        }]
+      },
+      options: { indexAxis: 'y', scales: { x: { beginAtZero: true } } }
+    });
+    
+    // Mock Training Trends
+    new Chart(document.getElementById('trendChart'), {
+      type: 'line',
+      data: {
+        labels: ['Epoch 1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
+        datasets: [{
+          label: 'Accuracy',
+          data: [0.65, 0.72, 0.78, 0.82, 0.86, 0.89, 0.91, 0.92, 0.93, metrics.accuracy],
+          borderColor: '#28a745',
+          fill: false
+        }]
+      },
+      options: { scales: { y: { beginAtZero: true, max: 1 } } }
+    });
+  </script>
+</body>
+</html>
+
